@@ -3,6 +3,6 @@
 
 class NormalizeSpace : public TextTransformation {
 public:
-    NormalizeSpace();
-    std::string transform(std::string& text) const override;
+    NormalizeSpace() = default;
+    std::string transform(const std::string& text) const override;
 };

@@ -3,6 +3,6 @@
 
 class RightTrim : public TextTransformation {
 public:
-    RightTrim();
-    std::string transform(std::string& text) const override;
+    RightTrim() = default;
+    std::string transform(const std::string& text) const override;
 };

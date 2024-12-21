@@ -1,6 +1,6 @@
 #include "../Headers/NormalizeSpace.h"
 
-std::string NormalizeSpace::transform(std::string& text) const {
+std::string NormalizeSpace::transform(const std::string& text) const {
     std::string result;
     bool hasSpace = false;
     for (char c : text) {

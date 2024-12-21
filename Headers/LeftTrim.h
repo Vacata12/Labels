@@ -3,6 +3,6 @@
 
 class LeftTrim : public TextTransformation {
 public:
-    LeftTrim();
-    std::string transform(std::string& text) const override;
+    LeftTrim() = default;
+    std::string transform(const std::string& text) const override;
 };

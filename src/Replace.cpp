@@ -5,7 +5,7 @@ Replace::Replace(const std::string& A, const std::string& B) {
     this->B = B;
 }
 
-std::string Replace::transform(std::string& text) const {
+std::string Replace::transform(const std::string& text) const {
     std::string result;
     for(size_t i = 0, j = A.length(); j < text.length(); i++, j++) {
         if(text.substr(i, j) == A) {

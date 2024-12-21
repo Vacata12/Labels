@@ -2,6 +2,7 @@
 #include "../Headers/TextTransformation.h"
 
 class Decorate : public TextTransformation {
-    Decorate();
-    std::string transform(std::string& text) const override;
+public:
+    Decorate() = default;
+    std::string transform(const std::string& text) const override;
 };

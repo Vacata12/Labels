@@ -3,6 +3,6 @@
 
 class Capitalize : public TextTransformation {
 public:
-    Capitalize();
-    std::string transform(std::string& text) const override;
+    Capitalize() = default;
+    std::string transform(const std::string& text) const override;
 };
