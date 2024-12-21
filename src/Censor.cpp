@@ -1,0 +1,22 @@
+#include "../Headers/Censor.h"
+
+Censor::Censor(const std::string& W) {
+    this->W = W;
+}
+
+std::string Censor::transform(std::string& text) const {
+    std::string result;
+    for(size_t i = 0, j = W.length(); j < text.length(); i++, j++) {
+        if(text.substr(i, j) == W) {
+            for(size_t i = 0; i < W.length(); i++) {
+                result += '*';
+            }
+            i = j;
+            j += W.length();
+        }
+        else {
+            result += text[i];
+        }
+    }
+    return result;
+}
