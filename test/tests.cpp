@@ -98,7 +98,7 @@ TEST_CASE("Censor functionality", "[Censor]") {
 
     SECTION("Censor censors word in sentence") {
         Censor censor("censor");
-        REQUIRE(censor.transform("This is a censor test") == "This is a ***** test");
+        REQUIRE(censor.transform("This is a censor test") == "This is a ****** test");
     }
 
     SECTION("Censor does not change string without censored word") {
@@ -141,24 +141,24 @@ TEST_CASE("NormalizeSpace functionality", "[NormalizeSpace]") {
     }
 }
 
-// TEST_CASE("Replace functionality", "[Replace]") {
-//     SECTION("Replace replaces A with B") {
-//         Replace replace("A", "B");
-//         REQUIRE(replace.transform("A") == "B");
-//     }
+TEST_CASE("Replace functionality", "[Replace]") {
+    SECTION("Replace replaces A with B") {
+        Replace replace("A", "B");
+        REQUIRE(replace.transform("A") == "B");
+    }
 
-//     SECTION("Replace replaces A with B in sentence") {
-//         Replace replace("A", "B");
-//         REQUIRE(replace.transform("This is A test") == "This is B test");
-//     }
+    SECTION("Replace replaces A with B in sentence") {
+        Replace replace("A", "B");
+        REQUIRE(replace.transform("This is A test") == "This is B test");
+    }
 
-//     SECTION("Replace does not change string without A") {
-//         Replace replace("A", "B");
-//         REQUIRE(replace.transform("This is a test") == "This is a test");
-//     }
+    SECTION("Replace does not change string without A") {
+        Replace replace("A", "B");
+        REQUIRE(replace.transform("This is a test") == "This is a test");
+    }
 
-//     SECTION("Replace does not change empty string") {
-//         Replace replace("A", "B");
-//         REQUIRE(replace.transform("") == "");
-//     }
-// }   
+    SECTION("Replace does not change empty string") {
+        Replace replace("A", "B");
+        REQUIRE(replace.transform("") == "");
+    }
+}   
