@@ -27,6 +27,10 @@ add_library(samplelib
     src/Censor.cpp
     Headers/Replace.h
     src/Replace.cpp
+    Headers/LabelDecoratorBase.h
+    src/LabelDecoratorBase.cpp
+    Headers/TextTransformationDecorator.h
+    src/TextTransformationDecorator.cpp
 )
 
 # Specify the include directories for samplelib

@@ -9,6 +9,7 @@
 #include "../Headers/Decorate.h"
 #include "../Headers/NormalizeSpace.h"
 #include "../Headers/Replace.h"
+#include "../Headers/TextTransformationDecorator.h"
 
 TEST_CASE("SimpleLabel functionality", "[SimpleLabel]") {
     SECTION("Constructor sets text correctly") {
@@ -162,3 +163,29 @@ TEST_CASE("Replace functionality", "[Replace]") {
         REQUIRE(replace.transform("") == "");
     }
 }   
+
+TEST_CASE("TextTransformationDecorator functionality", "[TextTransformationDecorator]") {
+    SECTION("getText applies transformation to label text") {
+        auto label = std::make_shared<SimpleLabel>("test");
+        auto capitalize = std::make_shared<Capitalize>();
+        TextTransformationDecorator decorator(label, capitalize);
+        REQUIRE(decorator.getText() == "Test");
+    }
+
+    SECTION("transform applies transformation to label text") {
+        auto label = std::make_shared<SimpleLabel>("test");
+        auto capitalize = std::make_shared<Capitalize>();
+        TextTransformationDecorator decorator(label, capitalize);
+        decorator.transform();
+        REQUIRE(label->getText() == "test");
+    }
+
+    SECTION("getText with multiple transformations") {
+        auto label = std::make_shared<SimpleLabel>("   test   ");
+        auto leftTrim = std::make_shared<LeftTrim>();
+        auto rightTrim = std::make_shared<RightTrim>();
+        TextTransformationDecorator leftTrimDecorator(label, leftTrim);
+        TextTransformationDecorator rightTrimDecorator(std::make_shared<TextTransformationDecorator>(leftTrimDecorator), rightTrim);
+        REQUIRE(rightTrimDecorator.getText() == "test");
+    }
+}
