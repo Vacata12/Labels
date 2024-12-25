@@ -31,6 +31,8 @@ add_library(samplelib
     src/LabelDecoratorBase.cpp
     Headers/TextTransformationDecorator.h
     src/TextTransformationDecorator.cpp
+    Headers/RandomTransformationDecorator.h
+    src/RandomTransformationDecorator.cpp
 )
 
 # Specify the include directories for samplelib

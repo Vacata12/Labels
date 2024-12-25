@@ -8,6 +8,6 @@ std::string RichLabel::getColor() const {
     return this->color;
 }
 
-std::string RichLabel::getText() const {
+std::string RichLabel::getText() {
     return SimpleLabel::getText();
 }

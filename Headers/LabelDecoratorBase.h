@@ -8,5 +8,5 @@ protected:
 public:
     LabelDecoratorBase(std::shared_ptr<Label> label);
     ~LabelDecoratorBase() = default;
-    std::string getText() const override;
+    std::string getText() override;
 };

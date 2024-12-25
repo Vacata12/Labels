@@ -4,9 +4,6 @@ TextTransformationDecorator::TextTransformationDecorator(std::shared_ptr<Label> 
 {
 
 }
-std::string TextTransformationDecorator::getText() const {
+std::string TextTransformationDecorator::getText() {
     return this->labelTransform->transform(label->getText());
-}
-void TextTransformationDecorator::transform() const {
-    labelTransform->transform(label->getText());
 }

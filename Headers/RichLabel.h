@@ -6,6 +6,6 @@ class RichLabel : public SimpleLabel {
 public:
     RichLabel(const std::string& text, const std::string& color);
     ~RichLabel() = default;
-    std::string getText() const override;
+    std::string getText() override;
     std::string getColor() const;
 };

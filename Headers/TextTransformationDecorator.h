@@ -8,6 +8,5 @@ protected:
 public:
     TextTransformationDecorator(std::shared_ptr<Label> label, std::shared_ptr<TextTransformation> labelTransform);
     ~TextTransformationDecorator() = default;
-    std::string getText() const override;
-    void transform() const;
+    std::string getText() override;
 };

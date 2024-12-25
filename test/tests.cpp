@@ -10,6 +10,7 @@
 #include "../Headers/NormalizeSpace.h"
 #include "../Headers/Replace.h"
 #include "../Headers/TextTransformationDecorator.h"
+#include "../Headers/RandomTransformationDecorator.h"
 
 TEST_CASE("SimpleLabel functionality", "[SimpleLabel]") {
     SECTION("Constructor sets text correctly") {
@@ -176,7 +177,6 @@ TEST_CASE("TextTransformationDecorator functionality", "[TextTransformationDecor
         auto label = std::make_shared<SimpleLabel>("test");
         auto capitalize = std::make_shared<Capitalize>();
         TextTransformationDecorator decorator(label, capitalize);
-        decorator.transform();
         REQUIRE(label->getText() == "test");
     }
 
@@ -189,3 +189,32 @@ TEST_CASE("TextTransformationDecorator functionality", "[TextTransformationDecor
         REQUIRE(rightTrimDecorator.getText() == "test");
     }
 }
+
+TEST_CASE("RandomTransformationDecorator functionality", "[RandomTransformationDecorator]") {
+    SECTION("generateTransformation adds a transformation to an empty list") {
+        auto label = std::make_shared<SimpleLabel>("test");
+        RandomTransformationDecorator decorator(label);
+        REQUIRE(decorator.getText() != "test");
+    }
+
+    SECTION("generateTransformation adds a different transformation to the list") {
+        auto label = std::make_shared<SimpleLabel>("test");
+        RandomTransformationDecorator decorator(label);
+        auto initialText = decorator.getText();
+        REQUIRE(decorator.getText() != initialText);
+    }
+
+    SECTION("generateTransformation does not add the same transformation to the list") {
+        auto label = std::make_shared<SimpleLabel>("test");
+        RandomTransformationDecorator decorator(label);
+        auto initialText = decorator.getText();
+        REQUIRE(decorator.getText() != initialText);
+    }
+
+    SECTION("getText returns transformed text") {
+        auto label = std::make_shared<SimpleLabel>("test");
+        RandomTransformationDecorator decorator(label);
+        REQUIRE(decorator.getText() != "test");
+    }
+}
+

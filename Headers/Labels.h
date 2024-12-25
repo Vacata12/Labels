@@ -3,5 +3,5 @@
 class Label {
 public:
     virtual ~Label() = default;
-    virtual std::string getText() const = 0;
+    virtual std::string getText() = 0;
 };
