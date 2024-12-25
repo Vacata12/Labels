@@ -13,9 +13,10 @@
 class RandomTransformationDecorator : public LabelDecoratorBase {
 private:
     std::vector<std::shared_ptr<TextTransformation> > transforms;
+    size_t currentIndex = 0;
     void generateTransformation();
 public:
-    RandomTransformationDecorator(std::shared_ptr<Label> label);
+    RandomTransformationDecorator(std::vector<std::shared_ptr<TextTransformation> > transforms, std::shared_ptr<Label> label);
     ~RandomTransformationDecorator() = default;
 
     std::string getText() override;

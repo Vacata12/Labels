@@ -11,6 +11,7 @@
 #include "../Headers/Replace.h"
 #include "../Headers/TextTransformationDecorator.h"
 #include "../Headers/RandomTransformationDecorator.h"
+#include "../Headers/CyclingTransformationsDecorator.h"
 
 TEST_CASE("SimpleLabel functionality", "[SimpleLabel]") {
     SECTION("Constructor sets text correctly") {
@@ -191,30 +192,100 @@ TEST_CASE("TextTransformationDecorator functionality", "[TextTransformationDecor
 }
 
 TEST_CASE("RandomTransformationDecorator functionality", "[RandomTransformationDecorator]") {
+    auto label = std::make_shared<SimpleLabel>("  test  ");
+
     SECTION("generateTransformation adds a transformation to an empty list") {
-        auto label = std::make_shared<SimpleLabel>("test");
-        RandomTransformationDecorator decorator(label);
-        REQUIRE(decorator.getText() != "test");
+        std::vector<std::shared_ptr<TextTransformation>> transforms = {
+            std::make_shared<Capitalize>(),
+            std::make_shared<LeftTrim>(),
+            std::make_shared<RightTrim>(),
+            std::make_shared<Censor>("t"),
+            std::make_shared<NormalizeSpace>(),
+            std::make_shared<Replace>("t", "b")
+        };
+        RandomTransformationDecorator decorator(transforms, label);
+        REQUIRE(decorator.getText() != "  test  ");
     }
 
     SECTION("generateTransformation adds a different transformation to the list") {
-        auto label = std::make_shared<SimpleLabel>("test");
-        RandomTransformationDecorator decorator(label);
+        std::vector<std::shared_ptr<TextTransformation>> transforms = {
+            std::make_shared<Capitalize>(),
+            std::make_shared<LeftTrim>(),
+            std::make_shared<RightTrim>(),
+            std::make_shared<Censor>("t"),
+            std::make_shared<NormalizeSpace>(),
+            std::make_shared<Replace>("t", "b")
+        };
+        RandomTransformationDecorator decorator(transforms, label);
         auto initialText = decorator.getText();
         REQUIRE(decorator.getText() != initialText);
     }
 
     SECTION("generateTransformation does not add the same transformation to the list") {
-        auto label = std::make_shared<SimpleLabel>("test");
-        RandomTransformationDecorator decorator(label);
+        std::vector<std::shared_ptr<TextTransformation>> transforms = {
+            std::make_shared<Capitalize>(),
+            std::make_shared<LeftTrim>(),
+            std::make_shared<RightTrim>(),
+            std::make_shared<Censor>("t"),
+            std::make_shared<NormalizeSpace>(),
+            std::make_shared<Replace>("t", "b")
+        };
+        RandomTransformationDecorator decorator(transforms, label);
         auto initialText = decorator.getText();
         REQUIRE(decorator.getText() != initialText);
     }
 
     SECTION("getText returns transformed text") {
-        auto label = std::make_shared<SimpleLabel>("test");
-        RandomTransformationDecorator decorator(label);
+        std::vector<std::shared_ptr<TextTransformation>> transforms = {
+            std::make_shared<Capitalize>(),
+            std::make_shared<LeftTrim>(),
+            std::make_shared<RightTrim>(),
+            std::make_shared<Censor>("t"),
+            std::make_shared<NormalizeSpace>(),
+            std::make_shared<Replace>("t", "b")
+        };
+        RandomTransformationDecorator decorator(transforms, label);
         REQUIRE(decorator.getText() != "test");
     }
 }
 
+TEST_CASE("CyclingTransformationsDecorator functionality", "[CyclingTransformationsDecorator]") {
+    auto label = std::make_shared<SimpleLabel>("  test  ");
+
+    SECTION("Cycling through transformations") {
+        std::vector<std::shared_ptr<TextTransformation>> transforms = {
+            std::make_shared<Capitalize>(),
+            std::make_shared<LeftTrim>(),
+            std::make_shared<RightTrim>(),
+            std::make_shared<Censor>("t"),
+            std::make_shared<NormalizeSpace>(),
+            std::make_shared<Replace>("a", "b")
+        };
+        CyclingTransformationsDecorator decorator(transforms, label);
+
+        REQUIRE(decorator.getText() == "  Test  "); // Capitalize
+        REQUIRE(decorator.getText() == "Test  ");  // LeftTrim
+        REQUIRE(decorator.getText() == "Test");    // RightTrim
+        REQUIRE(decorator.getText() == "Test");    // Censor (no change)
+        REQUIRE(decorator.getText() == "Test");    // NormalizeSpace (no change)
+        REQUIRE(decorator.getText() == "Test");    // Replace (no change)
+        REQUIRE(decorator.getText() == "  Test  "); // Back to Capitalize
+    }
+
+    SECTION("Empty transformations list") {
+        std::vector<std::shared_ptr<TextTransformation>> transforms;
+        CyclingTransformationsDecorator decorator(transforms, label);
+
+        REQUIRE(decorator.getText() == "  test  "); // No transformation applied
+    }
+
+    SECTION("Single transformation") {
+        std::vector<std::shared_ptr<TextTransformation>> transforms = {
+            std::make_shared<Capitalize>()
+        };
+        CyclingTransformationsDecorator decorator(transforms, label);
+
+        REQUIRE(decorator.getText() == "  Test  "); // Capitalize
+        REQUIRE(decorator.getText() == "  Test  "); // Capitalize (same transformation)
+    }
+}
