@@ -1,6 +1,6 @@
 #pragma once
 #include "LabelDecoratorBase.h"
-#include "TextTransformation.h"
+#include "TextTransformationDecorator.h"
 #include "Capitalize.h"
 #include "LeftTrim.h"
 #include "RightTrim.h"
@@ -12,11 +12,11 @@
 
 class RandomTransformationDecorator : public LabelDecoratorBase {
 private:
-    std::vector<std::shared_ptr<TextTransformation> > transforms;
+    std::vector<std::shared_ptr<TextTransformationDecorator> > transforms;
     size_t currentIndex = 0;
     void generateTransformation();
 public:
-    RandomTransformationDecorator(std::vector<std::shared_ptr<TextTransformation> > transforms, std::shared_ptr<Label> label);
+    RandomTransformationDecorator(std::vector<std::shared_ptr<TextTransformationDecorator> > transforms, std::shared_ptr<Label> label);
     ~RandomTransformationDecorator() = default;
 
     std::string getText() override;
