@@ -6,7 +6,7 @@
 
 class CyclingTransformationsDecorator : public LabelDecoratorBase {
     std::vector<std::shared_ptr<TextTransformation> > transforms;
-    size_t currentIndex = 0;
+    size_t currentIndex = -1;
     void moveOne();
 public:
     CyclingTransformationsDecorator(std::vector<std::shared_ptr<TextTransformation> > transforms, std::shared_ptr<Label> label);

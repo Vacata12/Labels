@@ -1,5 +1,7 @@
 #pragma once
 #include "../Headers/TextTransformation.h"
+#include "LeftTrim.h"
+#include "RightTrim.h"
 
 class NormalizeSpace : public TextTransformation {
 public:

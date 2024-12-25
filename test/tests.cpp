@@ -257,18 +257,18 @@ TEST_CASE("CyclingTransformationsDecorator functionality", "[CyclingTransformati
             std::make_shared<Capitalize>(),
             std::make_shared<LeftTrim>(),
             std::make_shared<RightTrim>(),
-            std::make_shared<Censor>("t"),
+            std::make_shared<Censor>("a"),
             std::make_shared<NormalizeSpace>(),
             std::make_shared<Replace>("a", "b")
         };
         CyclingTransformationsDecorator decorator(transforms, label);
 
         REQUIRE(decorator.getText() == "  Test  "); // Capitalize
-        REQUIRE(decorator.getText() == "Test  ");  // LeftTrim
-        REQUIRE(decorator.getText() == "Test");    // RightTrim
-        REQUIRE(decorator.getText() == "Test");    // Censor (no change)
-        REQUIRE(decorator.getText() == "Test");    // NormalizeSpace (no change)
-        REQUIRE(decorator.getText() == "Test");    // Replace (no change)
+        REQUIRE(decorator.getText() == "test  ");  // LeftTrim
+        REQUIRE(decorator.getText() == "  test");    // RightTrim
+        REQUIRE(decorator.getText() == "  test  ");    // Censor (no change)
+        REQUIRE(decorator.getText() == " test ");
+        REQUIRE(decorator.getText() == "  test  ");    // Replace (no change)
         REQUIRE(decorator.getText() == "  Test  "); // Back to Capitalize
     }
 

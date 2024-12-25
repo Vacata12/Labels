@@ -1,7 +1,7 @@
 #include "../Headers/CyclingTransformationsDecorator.h"
 
 void CyclingTransformationsDecorator::moveOne() {
-    if(currentIndex == transforms.size()) {
+    if(currentIndex == transforms.size() - 1) {
         currentIndex = 0;
     }
     else {
@@ -13,6 +13,9 @@ CyclingTransformationsDecorator::CyclingTransformationsDecorator(std::vector<std
 
 }
 std::string CyclingTransformationsDecorator:: getText() {
+    if(transforms.empty()) {
+        return label->getText();
+    }
     moveOne();
     return transforms[currentIndex]->transform(label->getText());
 }

@@ -1,8 +1,11 @@
 #include "../Headers/NormalizeSpace.h"
+#include <iostream>
 
 std::string NormalizeSpace::transform(const std::string& text) const {
     std::string result;
     bool hasSpace = false;
+    LeftTrim l;
+    RightTrim r;
     for (char c : text) {
         if (c == ' ') {
             if (!hasSpace) {
