@@ -238,3 +238,15 @@ TEST_CASE("CyclingTransformationsDecorator functionality", "[CyclingTransformati
         REQUIRE(decorator.getText() == "Test"); // Back to the first transformation: Capitalize
     }
 }
+
+TEST_CASE("LabelDecoratorTest", "[RemoveDecorator]") {
+    std::shared_ptr<Label> label = std::make_shared<SimpleLabel>("abcd efgh ijkl mnop");
+    label = std::make_shared<TextTransformationDecorator>(label, std::make_shared<Censor>("abcd"));
+    label = std::make_shared<TextTransformationDecorator>(label, std::make_shared<Censor>("mnop"));
+    REQUIRE(label->getText() == "**** efgh ijkl ****");
+
+    std::shared_ptr<LabelDecoratorBase> whatToRemove = std::make_shared<TextTransformationDecorator>(nullptr, std::make_shared<Censor>("abcd"));
+    label = LabelDecoratorBase::removeDecorator(label, whatToRemove);
+
+    
+}
