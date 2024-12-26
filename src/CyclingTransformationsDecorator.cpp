@@ -9,16 +9,14 @@ void CyclingTransformationsDecorator::moveOne() {
     }
 }
 
-CyclingTransformationsDecorator::CyclingTransformationsDecorator(std::vector<std::shared_ptr<TextTransformation> > _transforms, std::shared_ptr<Label> label) : LabelDecoratorBase(label) {
-    for(size_t i = 0; i < _transforms.size(); i++) {
-        transforms.push_back(std::make_shared<TextTransformationDecorator>(label, _transforms[i]));
-    }
+CyclingTransformationsDecorator::CyclingTransformationsDecorator(std::vector<std::shared_ptr<TextTransformation> > _transforms, std::shared_ptr<Label> label) : LabelDecoratorBase(label), transforms(_transforms) {
 }
 std::string CyclingTransformationsDecorator:: getText() {
     if(transforms.empty()) {
         return label->getText();
     }
     moveOne();
-    std::string result = transforms[currentIndex]->getText();
+    label = std::make_shared<TextTransformationDecorator>(label, transforms[currentIndex]);
+    std::string result = label->getText();
     return result;
 }

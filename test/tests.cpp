@@ -190,25 +190,26 @@ TEST_CASE("TextTransformationDecorator functionality", "[TextTransformationDecor
         REQUIRE(rightTrimDecorator.getText() == "test");
     }
 }
-// TEST_CASE("RandomTransformationDecorator functionality", "[RandomTransformationDecorator]") {
-//     SECTION("RandomTransformationDecorator applies one of the transformations randomly") {
-//         auto label = std::make_shared<SimpleLabel>("   test   ");
-//         auto leftTrim = std::make_shared<LeftTrim>();
-//         auto rightTrim = std::make_shared<RightTrim>();
-//         auto capitalize = std::make_shared<Capitalize>();
 
-//         std::vector<std::shared_ptr<TextTransformationDecorator>> transformations = {
-//             std::make_shared<TextTransformationDecorator>(label, leftTrim),
-//             std::make_shared<TextTransformationDecorator>(label, rightTrim),
-//             std::make_shared<TextTransformationDecorator>(label, capitalize)
-//         };
+TEST_CASE("RandomTransformationDecorator functionality", "[RandomTransformationDecorator]") {
+    SECTION("RandomTransformationDecorator applies one of the transformations randomly") {
+        auto label = std::make_shared<SimpleLabel>("   test   ");
+        auto leftTrim = std::make_shared<LeftTrim>();
+        auto rightTrim = std::make_shared<RightTrim>();
+        auto capitalize = std::make_shared<Capitalize>();
 
-//         RandomTransformationDecorator randomDecorator(transformations, label);
+        std::vector<std::shared_ptr<TextTransformation>> transformations = {
+            leftTrim,
+            rightTrim,
+            capitalize
+        };
 
-//         std::string result = randomDecorator.getText();
-//         REQUIRE((result == "test" || result == "   test" || result == "   Test   "));
-//     }
-// }
+        RandomTransformationDecorator randomDecorator(transformations, label);
+
+        std::string result = randomDecorator.getText();
+        REQUIRE((result == "test" || result == "   test" || result == "   Test   "));
+    }
+}
 
 TEST_CASE("CyclingTransformationsDecorator functionality", "[CyclingTransformationsDecorator]") {
     SECTION("getText returns label text if no transformations are provided") {

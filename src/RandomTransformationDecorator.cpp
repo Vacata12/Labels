@@ -16,10 +16,12 @@ void RandomTransformationDecorator::generateTransformation() {
         }
     }
 }
-RandomTransformationDecorator::RandomTransformationDecorator(std::vector<std::shared_ptr<TextTransformationDecorator> > transforms, std::shared_ptr<Label> label) : LabelDecoratorBase(label), transforms(transforms) {
+RandomTransformationDecorator::RandomTransformationDecorator(std::vector<std::shared_ptr<TextTransformation> > _transforms, std::shared_ptr<Label> label) : LabelDecoratorBase(label), transforms(_transforms) {
 }
 
 std::string RandomTransformationDecorator::getText() {
     generateTransformation();
-    return this->transforms[currentIndex]->getText();
+    label = std::make_shared<TextTransformationDecorator>(label, transforms[currentIndex]);
+    std::string result = label->getText();
+    return result;
 }

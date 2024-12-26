@@ -5,7 +5,7 @@
 #include <memory>
 
 class CyclingTransformationsDecorator : public LabelDecoratorBase {
-    std::vector<std::shared_ptr<TextTransformationDecorator> > transforms;
+    std::vector<std::shared_ptr<TextTransformation> > transforms;
     size_t currentIndex = -1;
     void moveOne();
 public:
