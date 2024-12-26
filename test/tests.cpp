@@ -262,6 +262,6 @@ TEST_CASE("CompositeTransformation functionality", "[CompositeTransformation]") 
     }
     SECTION("CompositeTransformation with replace") {
         CompositeTransformation composite("Capitalize Decorate Replace(abc,def)");
-        REQUIRE(composite.transform("abc def") == "-={⎵Abc⎵def⎵}=-");
+        REQUIRE(composite.transform("abc def") == "-={ Abc def }=-");
     }
 }

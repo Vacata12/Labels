@@ -43,11 +43,11 @@ void CompositeTransformation::createTransformations(const std::string newTransfo
     else if(newTransform == "Decorate") {
         transforms.push_back(std::make_shared<Decorate>());
     }
-    else if(newTransform.substr(0, 8) == "Censor") {
+    else if(newTransform.substr(0, 6) == "Censor") {
         std::string censorText = newTransform.substr(8, newTransform.size() - 1);
         transforms.push_back(std::make_shared<Censor>(censorText));
     }
-    else if(newTransform.substr(0,9) == "Replace") {
+    else if(newTransform.substr(0,7) == "Replace") {
         std::string replaceText = newTransform.substr(9, newTransform.size() - 1);
         std::string from = replaceText.substr(0, replaceText.find(" "));
         std::string to = replaceText.substr(replaceText.find(" ") + 1, replaceText.size() - 1);
