@@ -260,4 +260,8 @@ TEST_CASE("CompositeTransformation functionality", "[CompositeTransformation]") 
         CompositeTransformation composite("Capitalize LeftTrim RightTrim NormalizeSpace");
         REQUIRE(composite.transform("   test   ") == "Test");
     }
+    SECTION("CompositeTransformation with replace") {
+        CompositeTransformation composite("Capitalize Decorate Replace(abc,def)");
+        REQUIRE(composite.transform("abc def") == "-={⎵Abc⎵def⎵}=-");
+    }
 }
