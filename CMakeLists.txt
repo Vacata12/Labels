@@ -35,6 +35,8 @@ add_library(samplelib
     src/RandomTransformationDecorator.cpp
     Headers/CyclingTransformationsDecorator.h
     src/CyclingTransformationsDecorator.cpp
+    Headers/CompositeTransformation.h
+    src/CompositeTransformation.cpp
 )
 
 # Specify the include directories for samplelib

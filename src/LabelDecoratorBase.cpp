@@ -25,6 +25,5 @@ std::shared_ptr<Label> LabelDecoratorBase::removeDecorator(std::shared_ptr<Label
         previous = current;
         current = std::dynamic_pointer_cast<LabelDecoratorBase>(current->label);
     }
-    std::cout << label->getText() << std::endl;
     return label;
 }

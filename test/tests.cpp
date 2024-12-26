@@ -12,6 +12,7 @@
 #include "../Headers/TextTransformationDecorator.h"
 #include "../Headers/RandomTransformationDecorator.h"
 #include "../Headers/CyclingTransformationsDecorator.h"
+#include "../Headers/CompositeTransformation.h"
 
 TEST_CASE("SimpleLabel functionality", "[SimpleLabel]") {
     SECTION("Constructor sets text correctly") {
@@ -247,6 +248,16 @@ TEST_CASE("LabelDecoratorTest", "[RemoveDecorator]") {
 
     std::shared_ptr<LabelDecoratorBase> whatToRemove = std::make_shared<TextTransformationDecorator>(nullptr, std::make_shared<Censor>("abcd"));
     label = LabelDecoratorBase::removeDecorator(label, whatToRemove);
+    REQUIRE(label->getText() == "**** efgh ijkl ****"); 
+}
 
-    
+TEST_CASE("CompositeTransformation functionality", "[CompositeTransformation]") {
+    SECTION("CompositeTransformation apples one transformation") {
+        CompositeTransformation composite("Capitalize");
+        REQUIRE(composite.transform("test") == "Test");
+    }
+    SECTION("CompositeTransformation applies transformations in order") {
+        CompositeTransformation composite("Capitalize LeftTrim RightTrim NormalizeSpace");
+        REQUIRE(composite.transform("   test   ") == "Test");
+    }
 }
