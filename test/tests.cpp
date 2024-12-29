@@ -13,6 +13,7 @@
 #include "../Headers/RandomTransformationDecorator.h"
 #include "../Headers/CyclingTransformationsDecorator.h"
 #include "../Headers/CompositeTransformation.h"
+#include "../Headers/ProxyLabel.h"
 
 TEST_CASE("SimpleLabel functionality", "[SimpleLabel]") {
     SECTION("Constructor sets text correctly") {
@@ -263,5 +264,102 @@ TEST_CASE("CompositeTransformation functionality", "[CompositeTransformation]") 
     SECTION("CompositeTransformation with replace") {
         CompositeTransformation composite("Capitalize Decorate Replace(abc,def)");
         REQUIRE(composite.transform("abc def") == "-={ Abc def }=-");
+    }
+    //In work
+    // SECTION("CompositeTransformation swap") {
+    //     CompositeTransformation composite("Capitalize Decorate Replace(abc,def)");
+    //     composite.swithPlacesOfTransforms(0, 2);
+    //     composite.swithPlacesOfTransforms(1, 2);
+    //     REQUIRE(composite.transform("abc def") == "-={ Def def }=-");
+    // }
+}
+TEST_CASE("ProxyLabel Edge Cases", "[ProxyLabel]") {
+    SECTION("getText without makeTimeout()") {
+        ProxyLabel proxyLabel;
+        std::string expectedText = "Edge Case Label";
+
+        // Simulate user input
+        std::istringstream input(expectedText);
+        std::cin.rdbuf(input.rdbuf());
+
+        // Act
+        std::string actualText = proxyLabel.getText();
+
+        // Assert
+        REQUIRE(actualText == expectedText);
+    }
+
+    SECTION("makeTimeout without loading a label") {
+        ProxyLabel proxyLabel;
+
+        // Act
+        proxyLabel.makeTimeout();
+
+        // Simulate user input
+        std::ostringstream output;
+        std::streambuf* oldCoutBuffer = std::cout.rdbuf(output.rdbuf());
+        proxyLabel.getText();
+
+        // Restore the original buffer
+        std::cout.rdbuf(oldCoutBuffer);
+
+        // Assert
+        REQUIRE(output.str().find("Enter text for the label:") != std::string::npos);
+    }
+}
+
+TEST_CASE("ProxyLabel Stress Tests", "[ProxyLabel]") {
+    SECTION("getText called multiple times") {
+        ProxyLabel proxyLabel;
+        std::string initialText = "Initial Text";
+
+        // Simulate initial user input
+        std::istringstream input(initialText);
+        std::cin.rdbuf(input.rdbuf());
+
+        // First call
+        REQUIRE(proxyLabel.getText() == initialText);
+
+        // Second call (cached value)
+        REQUIRE(proxyLabel.getText() == initialText);
+
+        // Third call (still cached value)
+        REQUIRE(proxyLabel.getText() == initialText);
+    }
+}
+
+TEST_CASE("ProxyLabel Integration Tests", "[ProxyLabel]") {
+    SECTION("Integration with SimpleLabel") {
+        ProxyLabel proxyLabel;
+        std::string labelText = "SimpleLabel Integration";
+
+        // Simulate user input
+        std::istringstream input(labelText);
+        std::cin.rdbuf(input.rdbuf());
+
+        // Act
+        std::string actualText = proxyLabel.getText();
+
+        // Assert
+        REQUIRE(actualText == labelText);
+    }
+    SECTION("Integration with TextTransformationDecorator") {
+    auto proxyLabel = std::make_shared<ProxyLabel>();
+    std::string initialText = "Transformation Test";
+
+    // Simulate initial user input
+    std::istringstream input(initialText);
+    std::cin.rdbuf(input.rdbuf());
+    proxyLabel->getText();
+
+    // Wrap ProxyLabel with a decorator
+    auto capitalize = std::make_shared<Capitalize>();
+    TextTransformationDecorator decorator(proxyLabel, capitalize);
+
+    // Act
+    std::string transformedText = decorator.getText();
+
+    // Assert
+    REQUIRE(transformedText == "Transformation Test");
     }
 }

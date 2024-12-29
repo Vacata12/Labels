@@ -37,6 +37,8 @@ add_library(samplelib
     src/CyclingTransformationsDecorator.cpp
     Headers/CompositeTransformation.h
     src/CompositeTransformation.cpp
+    Headers/ProxyLabel.h
+    src/ProxyLabel.cpp
 )
 
 # Specify the include directories for samplelib

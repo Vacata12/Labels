@@ -24,7 +24,9 @@ std::string CompositeTransformation::transform(const std::string& text) const
 }
 
 void CompositeTransformation::swithPlacesOfTransforms(size_t one, size_t two){
-    std::swap(transforms[one], transforms[two]);
+    std::shared_ptr<TextTransformation> tmp = transforms[one];
+    transforms[one] = transforms[two];
+    transforms[two] = tmp;
 }
 
 void CompositeTransformation::createTransformations(const std::string newTransform) {
