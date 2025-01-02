@@ -39,6 +39,8 @@ add_library(samplelib
     src/CompositeTransformation.cpp
     Headers/ProxyLabel.h
     src/ProxyLabel.cpp
+    Headers/RichLabel.h
+    src/RichLabelImp.cpp
 )
 
 # Specify the include directories for samplelib

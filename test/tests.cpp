@@ -14,6 +14,7 @@
 #include "../Headers/CyclingTransformationsDecorator.h"
 #include "../Headers/CompositeTransformation.h"
 #include "../Headers/ProxyLabel.h"
+#include "../Headers/RichLabelImp.h"
 
 TEST_CASE("SimpleLabel functionality", "[SimpleLabel]") {
     SECTION("Constructor sets text correctly") {
@@ -361,5 +362,29 @@ TEST_CASE("ProxyLabel Integration Tests", "[ProxyLabel]") {
 
     // Assert
     REQUIRE(transformedText == "Transformation Test");
+    }
+}
+
+TEST_CASE("RichLabelImp functionality", "[RichLabelImp]") {
+    SECTION("Constructor sets text, color, and helpText correctly") {
+        RichLabelImp label("Test Text", "Red", "Help Text");
+        REQUIRE(label.getText() == "Test Text");
+        REQUIRE(label.getColor() == "Red");
+        REQUIRE(label.getHelpText() == "Help Text");
+    }
+
+    SECTION("getText returns correct text") {
+        RichLabelImp label("Another Test", "Blue", "Another Help Text");
+        REQUIRE(label.getText() == "Another Test");
+    }
+
+    SECTION("getColor returns correct color") {
+        RichLabelImp label("Test Text", "Green", "Help Text");
+        REQUIRE(label.getColor() == "Green");
+    }
+
+    SECTION("getHelpText returns correct help text") {
+        RichLabelImp label("Test Text", "Yellow", "Help Text");
+        REQUIRE(label.getHelpText() == "Help Text");
     }
 }

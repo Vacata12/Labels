@@ -1,7 +1,8 @@
 #pragma once
 #include "../Headers/SimpleLabel.h"
 
-class RichLabel : public SimpleLabel {
+class RichLabel : public Label {
+    std::string text;
     std::string color;
 public:
     RichLabel(const std::string& text, const std::string& color);
