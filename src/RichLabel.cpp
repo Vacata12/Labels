@@ -5,7 +5,7 @@ RichLabel::RichLabel(const std::string& text, const std::string& color) {
     this->color = color;
 }
 
-std::string RichLabel::getColor() const {
+std::string RichLabel::getColor() {
     return this->color;
 }
 
