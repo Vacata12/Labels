@@ -50,9 +50,9 @@ void CompositeTransformation::createTransformations(const std::string newTransfo
         transforms.push_back(std::make_shared<Censor>(censorText));
     }
     else if(newTransform.substr(0,7) == "Replace") {
-        std::string replaceText = newTransform.substr(9, newTransform.size() - 1);
-        std::string from = replaceText.substr(0, replaceText.find(" "));
-        std::string to = replaceText.substr(replaceText.find(" ") + 1, replaceText.size() - 1);
+        std::string replaceText = newTransform.substr(8, newTransform.size() - 1);
+        std::string from = replaceText.substr(0, replaceText.find(","));
+        std::string to = replaceText.substr(replaceText.length() - from.length() - 1, replaceText.length() - from.length() - 2);
         transforms.push_back(std::make_shared<Replace>(from, to));
     }
     else {

@@ -14,6 +14,7 @@
 #include "../Headers/CyclingTransformationsDecorator.h"
 #include "../Headers/CompositeTransformation.h"
 #include "../Headers/ProxyLabel.h"
+#include "../Headers/LabelPrinter.h"
 
 TEST_CASE("SimpleLabel functionality", "[SimpleLabel]") {
     SECTION("Constructor sets text correctly") {
@@ -266,12 +267,12 @@ TEST_CASE("CompositeTransformation functionality", "[CompositeTransformation]") 
         REQUIRE(composite.transform("abc def") == "-={ Abc def }=-");
     }
     //In work
-    // SECTION("CompositeTransformation swap") {
-    //     CompositeTransformation composite("Capitalize Decorate Replace(abc,def)");
-    //     composite.swithPlacesOfTransforms(0, 2);
-    //     composite.swithPlacesOfTransforms(1, 2);
-    //     REQUIRE(composite.transform("abc def") == "-={ Def def }=-");
-    // }
+    SECTION("CompositeTransformation swap") {
+        CompositeTransformation composite("Capitalize Decorate Replace(abc,def)");
+        composite.swithPlacesOfTransforms(0, 2);
+        composite.swithPlacesOfTransforms(1, 2);
+        REQUIRE(composite.transform("abc def") == "-={ Def def }=-");
+    }
 }
 TEST_CASE("ProxyLabel Edge Cases", "[ProxyLabel]") {
     SECTION("getText without makeTimeout()") {
@@ -361,5 +362,30 @@ TEST_CASE("ProxyLabel Integration Tests", "[ProxyLabel]") {
 
     // Assert
     REQUIRE(transformedText == "Transformation Test");
+    }
+}
+
+TEST_CASE("LabelPrinter functionality", "[LabelPrinter]") {
+    SECTION("Constructor initializes with label") {
+        auto label = std::make_unique<SimpleLabel>("Test Label");
+        LabelPrinter printer(std::move(label));
+
+        REQUIRE(printer.getHelpText() == "");
+    }
+
+    SECTION("Constructor initializes with label and help text") {
+        auto label = std::make_unique<SimpleLabel>("Test Label");
+        std::string helpText = "This is a help text.";
+        LabelPrinter printer(std::move(label), helpText);
+
+        REQUIRE(printer.getHelpText() == helpText);
+    }
+
+    SECTION("getHelpText returns correct help text") {
+        auto label = std::make_unique<SimpleLabel>("Test Label");
+        std::string helpText = "Help text for the label.";
+        LabelPrinter printer(std::move(label), helpText);
+
+        REQUIRE(printer.getHelpText() == "Help text for the label.");
     }
 }

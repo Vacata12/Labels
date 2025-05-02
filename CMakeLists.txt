@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Define the samplelib library
 add_library(samplelib
     Headers/Labels.h
-    src//Labels.cpp
+    src/Labels.cpp
     Headers/TextTransformation.h
     Headers/SimpleLabel.h
     src/SimpleLabel.cpp
@@ -40,6 +40,7 @@ add_library(samplelib
     src/CompositeTransformation.cpp
     Headers/ProxyLabel.h
     src/ProxyLabel.cpp
+    src/LabelPrinter.cpp
 )
 
 # Specify the include directories for samplelib
