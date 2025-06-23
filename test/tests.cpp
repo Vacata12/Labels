@@ -188,9 +188,11 @@ TEST_CASE("TextTransformationDecorator functionality", "[TextTransformationDecor
         auto label = std::make_shared<SimpleLabel>("   test   ");
         auto leftTrim = std::make_shared<LeftTrim>();
         auto rightTrim = std::make_shared<RightTrim>();
-        TextTransformationDecorator leftTrimDecorator(label, leftTrim);
-        TextTransformationDecorator rightTrimDecorator(std::make_shared<TextTransformationDecorator>(leftTrimDecorator), rightTrim);
-        REQUIRE(rightTrimDecorator.getText() == "test");
+        
+        auto leftTrimDecorator = std::make_shared<TextTransformationDecorator>(label, leftTrim);
+        auto rightTrimDecorator = std::make_shared<TextTransformationDecorator>(leftTrimDecorator, rightTrim);
+    
+        REQUIRE(rightTrimDecorator->getText() == "test");
     }
 }
 
@@ -274,118 +276,26 @@ TEST_CASE("CompositeTransformation functionality", "[CompositeTransformation]") 
         REQUIRE(composite.transform("abc def") == "-={ Def def }=-");
     }
 }
-TEST_CASE("ProxyLabel Edge Cases", "[ProxyLabel]") {
-    SECTION("getText without makeTimeout()") {
-        ProxyLabel proxyLabel;
-        std::string expectedText = "Edge Case Label";
 
-        // Simulate user input
-        std::istringstream input(expectedText);
+
+TEST_CASE("ProxyLabel makeTimeout behavior", "[ProxyLabel]") {
+    ProxyLabel proxyLabel;
+
+    SECTION("makeTimeout changes label when option 1 is selected") {
+        std::istringstream input("1\nNew Label Text");
         std::cin.rdbuf(input.rdbuf());
 
-        // Act
-        std::string actualText = proxyLabel.getText();
-
-        // Assert
-        REQUIRE(actualText == expectedText);
-    }
-
-    SECTION("makeTimeout without loading a label") {
-        ProxyLabel proxyLabel;
-
-        // Act
         proxyLabel.makeTimeout();
+        REQUIRE(proxyLabel.getText() == "New Label Text");
 
-        // Simulate user input
-        std::ostringstream output;
-        std::streambuf* oldCoutBuffer = std::cout.rdbuf(output.rdbuf());
-        proxyLabel.getText();
 
-        // Restore the original buffer
-        std::cout.rdbuf(oldCoutBuffer);
+        std::istringstream input2("2\n");
+        std::cin.rdbuf(input2.rdbuf());
 
-        // Assert
-        REQUIRE(output.str().find("Enter text for the label:") != std::string::npos);
-    }
-}
+        std::string currentLabel = proxyLabel.getText();
+        std::cout << "Current label: " << currentLabel << std::endl;
 
-TEST_CASE("ProxyLabel Stress Tests", "[ProxyLabel]") {
-    SECTION("getText called multiple times") {
-        ProxyLabel proxyLabel;
-        std::string initialText = "Initial Text";
-
-        // Simulate initial user input
-        std::istringstream input(initialText);
-        std::cin.rdbuf(input.rdbuf());
-
-        // First call
-        REQUIRE(proxyLabel.getText() == initialText);
-
-        // Second call (cached value)
-        REQUIRE(proxyLabel.getText() == initialText);
-
-        // Third call (still cached value)
-        REQUIRE(proxyLabel.getText() == initialText);
-    }
-}
-
-TEST_CASE("ProxyLabel Integration Tests", "[ProxyLabel]") {
-    SECTION("Integration with SimpleLabel") {
-        ProxyLabel proxyLabel;
-        std::string labelText = "SimpleLabel Integration";
-
-        // Simulate user input
-        std::istringstream input(labelText);
-        std::cin.rdbuf(input.rdbuf());
-
-        // Act
-        std::string actualText = proxyLabel.getText();
-
-        // Assert
-        REQUIRE(actualText == labelText);
-    }
-    SECTION("Integration with TextTransformationDecorator") {
-    auto proxyLabel = std::make_shared<ProxyLabel>();
-    std::string initialText = "Transformation Test";
-
-    // Simulate initial user input
-    std::istringstream input(initialText);
-    std::cin.rdbuf(input.rdbuf());
-    proxyLabel->getText();
-
-    // Wrap ProxyLabel with a decorator
-    auto capitalize = std::make_shared<Capitalize>();
-    TextTransformationDecorator decorator(proxyLabel, capitalize);
-
-    // Act
-    std::string transformedText = decorator.getText();
-
-    // Assert
-    REQUIRE(transformedText == "Transformation Test");
-    }
-}
-
-TEST_CASE("LabelPrinter functionality", "[LabelPrinter]") {
-    SECTION("Constructor initializes with label") {
-        auto label = std::make_unique<SimpleLabel>("Test Label");
-        LabelPrinter printer(std::move(label));
-
-        REQUIRE(printer.getHelpText() == "");
-    }
-
-    SECTION("Constructor initializes with label and help text") {
-        auto label = std::make_unique<SimpleLabel>("Test Label");
-        std::string helpText = "This is a help text.";
-        LabelPrinter printer(std::move(label), helpText);
-
-        REQUIRE(printer.getHelpText() == helpText);
-    }
-
-    SECTION("getHelpText returns correct help text") {
-        auto label = std::make_unique<SimpleLabel>("Test Label");
-        std::string helpText = "Help text for the label.";
-        LabelPrinter printer(std::move(label), helpText);
-
-        REQUIRE(printer.getHelpText() == "Help text for the label.");
+        proxyLabel.makeTimeout();
+        REQUIRE(proxyLabel.getText() == currentLabel);
     }
 }

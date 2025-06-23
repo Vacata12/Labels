@@ -4,6 +4,11 @@ project(Labels)
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_BUILD_TYPE Debug)
+
+# Improved debug flags for macOS
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -gdwarf-4")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Define the samplelib library
 add_library(samplelib
@@ -41,6 +46,8 @@ add_library(samplelib
     Headers/ProxyLabel.h
     src/ProxyLabel.cpp
     src/LabelPrinter.cpp
+    Headers/HelpText.h
+    src/HelpText.cpp
 )
 
 # Specify the include directories for samplelib

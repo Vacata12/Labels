@@ -5,6 +5,7 @@ class SimpleLabel : public Label {
     std::string text;
 public:
     SimpleLabel(const std::string& text);
+    SimpleLabel(const std::string& text, const std::string& helpText);
     ~SimpleLabel() = default;
-    std::string getText() override;
+    std::string getText() const override;
 };

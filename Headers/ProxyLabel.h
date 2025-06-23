@@ -11,7 +11,7 @@ public:
     ProxyLabel();
     ~ProxyLabel() = default;
     void makeTimeout();
-    std::string getText() override;
+    std::string getText() const override;
 private:
     void changeLabel();
 };

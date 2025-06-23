@@ -3,8 +3,16 @@
 
 LabelDecoratorBase::LabelDecoratorBase(std::shared_ptr<Label> label) : label(label)
 {}
-std::string LabelDecoratorBase::getText() {
+
+
+std::string LabelDecoratorBase::getText() const
+{
     return this->label->getText();
+}
+
+std::string LabelDecoratorBase::getHelpText() const
+{
+    return "";
 }
 
 std::shared_ptr<Label> LabelDecoratorBase::removeDecorator(std::shared_ptr<Label> label, std::shared_ptr<LabelDecoratorBase> toRemove) {

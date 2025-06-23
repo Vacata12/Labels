@@ -1,6 +1,6 @@
 #include "../Headers/CyclingTransformationsDecorator.h"
 
-void CyclingTransformationsDecorator::moveOne() {
+void CyclingTransformationsDecorator::moveOne() const {
     if(currentIndex == transforms.size() - 1) {
         currentIndex = 0;
     }
@@ -11,7 +11,8 @@ void CyclingTransformationsDecorator::moveOne() {
 
 CyclingTransformationsDecorator::CyclingTransformationsDecorator(std::vector<std::shared_ptr<TextTransformation> > _transforms, std::shared_ptr<Label> label) : LabelDecoratorBase(label), transforms(_transforms) {
 }
-std::string CyclingTransformationsDecorator:: getText() {
+std::string CyclingTransformationsDecorator:: getText() const
+ {
     if(transforms.empty()) {
         return label->getText();
     }

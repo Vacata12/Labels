@@ -6,11 +6,11 @@
 
 class CyclingTransformationsDecorator : public LabelDecoratorBase {
     std::vector<std::shared_ptr<TextTransformation> > transforms;
-    size_t currentIndex = -1;
+    mutable size_t currentIndex = -1;
 public:
     CyclingTransformationsDecorator(std::vector<std::shared_ptr<TextTransformation> > _ransforms, std::shared_ptr<Label> label);
     ~CyclingTransformationsDecorator() = default;
-    std::string getText() override;
+    std::string getText() const override;
 private:
-    void moveOne();
+    void moveOne() const;
 };

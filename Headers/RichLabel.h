@@ -7,8 +7,8 @@ class RichLabel : public Label {
     std::string color;
 public:
     RichLabel(const std::string& text, const std::string& color);
-    RichLabel(const std::string& text, const std::string& color, std::shared_ptr<LabelPrinter> LabelPrinter);
+    RichLabel(const std::string& text, const std::string& color, const std::string& helpText);
     ~RichLabel() = default;
-    std::string getText() override;
-    std::string getColor() override;
+    std::string getText() const override;
+    std::string getColor() const override;
 };

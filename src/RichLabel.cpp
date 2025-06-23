@@ -1,14 +1,17 @@
 #include "../Headers/RichLabel.h"
 
-RichLabel::RichLabel(const std::string& text, const std::string& color) {
-    this->text = text;
-    this->color = color;
-}
+RichLabel::RichLabel(const std::string& text, const std::string& color) : text(text), color(color) {}
 
-std::string RichLabel::getColor() {
+RichLabel::RichLabel(const std::string& text, const std::string& color, const std::string& helpText) : text(text), color(color)
+{
+    this->helpText = std::make_unique<HelpText>(helpText);
+}
+std::string RichLabel::getColor() const
+{
     return this->color;
 }
 
-std::string RichLabel::getText() {
+std::string RichLabel::getText() const
+{
     return this->text;
 }
