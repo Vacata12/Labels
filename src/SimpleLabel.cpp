@@ -1,16 +1,12 @@
 #include "../Headers/SimpleLabel.h"
-#include <iostream>
+#include "../Headers/HelpText.h"
 
-SimpleLabel::SimpleLabel(const std::string& text) : text(text)
-{}
+SimpleLabel::SimpleLabel(const std::string& text) 
+    : Label(), text(text) {}
 
 SimpleLabel::SimpleLabel(const std::string& text, const std::string& helpText) 
-    : text(text)
-{
-    this->helpText = std::make_unique<HelpText>(helpText);
-}
+    : Label(createHelpText(helpText)), text(text) {}
 
-std::string SimpleLabel::getText() const
-{
-    return this->text;
+std::string SimpleLabel::getText() const {
+    return text;
 }

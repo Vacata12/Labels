@@ -3,9 +3,11 @@
 
 class SimpleLabel : public Label {
     std::string text;
+    
 public:
-    SimpleLabel(const std::string& text);
+    explicit SimpleLabel(const std::string& text);
     SimpleLabel(const std::string& text, const std::string& helpText);
-    ~SimpleLabel() = default;
+    ~SimpleLabel() override = default;
+    
     std::string getText() const override;
 };

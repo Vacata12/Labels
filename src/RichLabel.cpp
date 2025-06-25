@@ -4,7 +4,7 @@ RichLabel::RichLabel(const std::string& text, const std::string& color) : text(t
 
 RichLabel::RichLabel(const std::string& text, const std::string& color, const std::string& helpText) : text(text), color(color)
 {
-    this->helpText = std::make_unique<HelpText>(helpText);
+    this->helpTextImpl = std::make_unique<HelpText>(helpText);
 }
 std::string RichLabel::getColor() const
 {
