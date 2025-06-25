@@ -1,84 +1,35 @@
 cmake_minimum_required(VERSION 3.14)
 project(Labels)
 
-# Set the C++ standard
+# Set the C++ standard and debug flags
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Debug)
-
-# Improved debug flags for macOS
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -gdwarf-4")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Define the samplelib library
-add_library(samplelib
-    Headers/Labels.h
-    src/Labels.cpp
-    Headers/TextTransformation.h
-    Headers/SimpleLabel.h
-    src/SimpleLabel.cpp
-    Headers/RichLabel.h
-    src/RichLabel.cpp
-    Headers/Capitalize.h
-    src/Capitalize.cpp
-    Headers/LeftTrim.h
-    src/LeftTrim.cpp
-    Headers/RightTrim.h
-    src/RightTrim.cpp
-    Headers/NormalizeSpace.h
-    src/NormalizeSpace.cpp
-    Headers/Decorate.h
-    src/Decorate.cpp
-    Headers/Censor.h
-    src/Censor.cpp
-    Headers/Replace.h
-    src/Replace.cpp
-    Headers/LabelDecoratorBase.h
-    src/LabelDecoratorBase.cpp
-    Headers/TextTransformationDecorator.h
-    src/TextTransformationDecorator.cpp
-    Headers/RandomTransformationDecorator.h
-    src/RandomTransformationDecorator.cpp
-    Headers/CyclingTransformationsDecorator.h
-    src/CyclingTransformationsDecorator.cpp
-    Headers/CompositeTransformation.h
-    src/CompositeTransformation.cpp
-    Headers/ProxyLabel.h
-    src/ProxyLabel.cpp
-    src/LabelPrinter.cpp
-    Headers/HelpText.h
-    src/HelpText.cpp
-)
+# Add library source and header files
+file(GLOB_RECURSE LIB_HEADERS Headers/*.h)
+file(GLOB_RECURSE LIB_SOURCES src/*.cpp)
 
-# Specify the include directories for samplelib
+add_library(samplelib ${LIB_HEADERS} ${LIB_SOURCES})
 target_include_directories(samplelib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Headers)
 
-# Make Catch2 available
+# Fetch Catch2
 include(FetchContent)
-
 FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
     GIT_TAG v3.1.1
 )
-
 FetchContent_MakeAvailable(Catch2)
 
-# Executable target for the unit tests
-add_executable(unit-tests
-    test/tests.cpp
-)
-
-target_link_libraries(
-    unit-tests
-    PRIVATE
-    samplelib
-    Catch2::Catch2WithMain
-)
-
+# Add unit test executable
+add_executable(unit-tests test/tests.cpp)
+target_link_libraries(unit-tests PRIVATE samplelib Catch2::Catch2WithMain)
 target_include_directories(unit-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Headers)
 
-# Automatically register all tests
+# Enable testing and Catch2 test discovery
 include(CTest)
 include(Catch)
 catch_discover_tests(unit-tests)

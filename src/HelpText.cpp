@@ -1,2 +1,0 @@
-#include "../Headers/HelpText.h"
-
