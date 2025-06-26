@@ -299,3 +299,135 @@ TEST_CASE("ProxyLabel makeTimeout behavior", "[ProxyLabel]") {
         REQUIRE(proxyLabel.getText() == currentLabel);
     }
 }
+
+TEST_CASE("HelpTextImpl basic functionality", "[HelpText]") {
+    SECTION("Create empty HelpText") {
+        HelpText helpText;
+        REQUIRE(helpText.getHelpText() == "");
+    }
+    
+    SECTION("Create HelpText with text") {
+        HelpText helpText("This is help text");
+        REQUIRE(helpText.getHelpText() == "This is help text");
+    }
+}
+
+TEST_CASE("Label with HelpText functionality", "[Label]") {
+    SECTION("Default Label has no HelpText") {
+        Label* label = new SimpleLabel("Test");
+        REQUIRE_FALSE(label->hasHelpText());
+        REQUIRE(label->getHelpText() == "");
+        delete label;
+    }
+    
+    SECTION("Setting HelpText on Label") {
+        Label* label = new SimpleLabel("Test");
+        label->setHelpText(createHelpText("New help text"));
+        REQUIRE(label->hasHelpText());
+        REQUIRE(label->getHelpText() == "New help text");
+        delete label;
+    }
+    
+    SECTION("Creating Label with HelpText") {
+        SimpleLabel label("Test", "Help for test label");
+        REQUIRE(label.hasHelpText());
+        REQUIRE(label.getHelpText() == "Help for test label");
+    }
+}
+
+TEST_CASE("SimpleLabel with HelpText", "[SimpleLabel]") {
+    SECTION("SimpleLabel without help text") {
+        SimpleLabel label("Test");
+        REQUIRE_FALSE(label.hasHelpText());
+    }
+    
+    SECTION("SimpleLabel with help text via constructor") {
+        SimpleLabel label("Test", "This is help text for Test");
+        REQUIRE(label.hasHelpText());
+        REQUIRE(label.getHelpText() == "This is help text for Test");
+    }
+    
+    SECTION("SimpleLabel with help text via setter") {
+        SimpleLabel label("Test");
+        label.setHelpText(createHelpText("Added help text"));
+        REQUIRE(label.hasHelpText());
+        REQUIRE(label.getHelpText() == "Added help text");
+    }
+}
+
+TEST_CASE("RichLabel with HelpText", "[RichLabel]") {
+    SECTION("RichLabel with help text via constructor") {
+        RichLabel label("Test", "blue", "This is help for a blue label");
+        REQUIRE(label.hasHelpText());
+        REQUIRE(label.getHelpText() == "This is help for a blue label");
+    }
+    
+    SECTION("RichLabel help text does not affect text or color") {
+        RichLabel label("Test", "red", "Help info");
+        REQUIRE(label.getText() == "Test");
+        REQUIRE(label.getColor() == "red");
+        REQUIRE(label.getHelpText() == "Help info");
+    }
+}
+
+TEST_CASE("HelpText with decorators", "[Decorators]") {
+    SECTION("Decorators preserve help text") {
+        auto baseLabel = std::make_shared<SimpleLabel>("test", "This is help text");
+        auto capitalize = std::make_shared<Capitalize>();
+        
+        TextTransformationDecorator decorator(baseLabel, capitalize);
+        
+        REQUIRE(decorator.getText() == "Test");
+        REQUIRE(baseLabel->hasHelpText());
+        REQUIRE(baseLabel->getHelpText() == "This is help text");
+    }
+}
+
+TEST_CASE("LabelPrinter with HelpText", "[LabelPrinter]") {
+    SECTION("Print label with help text") {
+        std::stringstream buffer;
+        std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
+        
+        SimpleLabel label("Test Label", "Help for test label");
+        LabelPrinter::printWithHelpText(&label);
+        
+        std::cout.rdbuf(old);
+        std::string output = buffer.str();
+        
+        REQUIRE(output.find("Here is a label: Test Label") != std::string::npos);
+        REQUIRE(output.find("Some help information about this label: Help for test label") != std::string::npos);
+    }
+    
+    SECTION("Print label without help text") {
+        std::stringstream buffer;
+        std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
+        
+        SimpleLabel label("Test Label");
+        LabelPrinter::printWithHelpText(&label);
+        
+        std::cout.rdbuf(old);
+        std::string output = buffer.str();
+        
+        REQUIRE(output.find("Here is a label: Test Label") != std::string::npos);
+        REQUIRE(output.find("Some help information") == std::string::npos);
+    }
+}
+
+TEST_CASE("Help text modification", "[HelpText]") {
+    SECTION("Change help text after creation") {
+        SimpleLabel label("Test", "Initial help");
+        REQUIRE(label.getHelpText() == "Initial help");
+        
+        label.setHelpText(createHelpText("Updated help"));
+        REQUIRE(label.getHelpText() == "Updated help");
+    }
+    
+    SECTION("Remove help text") {
+        SimpleLabel label("Test", "Help text");
+        REQUIRE(label.hasHelpText());
+        
+        label.setHelpText(nullptr);
+        REQUIRE_FALSE(label.hasHelpText());
+        REQUIRE(label.getHelpText() == "");
+    }
+}
