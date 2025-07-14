@@ -25,7 +25,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 # Add unit test executable
-add_executable(unit-tests test/tests.cpp)
+add_executable(unit-tests 
+    test/tests.cpp
+    # test/factory_tests.cpp
+)
 target_link_libraries(unit-tests PRIVATE samplelib Catch2::Catch2WithMain)
 target_include_directories(unit-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Headers)
 
@@ -33,3 +36,8 @@ target_include_directories(unit-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Header
 include(CTest)
 include(Catch)
 catch_discover_tests(unit-tests)
+
+# Add factory example executable
+# add_executable(factory-example src/Factory/FactoryExample.cpp)
+# target_link_libraries(factory-example PRIVATE samplelib)
+# target_include_directories(factory-example PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Headers)

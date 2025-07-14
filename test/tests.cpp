@@ -15,6 +15,9 @@
 #include "../Headers/Transformations/CompositeTransformation.h"
 #include "../Headers/Labels/ProxyLabel.h"
 #include "../Headers/Printer/LabelPrinter.h"
+#include "../Headers/Factory/LabelFactory.h"
+#include "../Headers/Factory/TransformationFactory.h"
+#include "../Headers/Factory/DecoratorFactory.h"
 
 TEST_CASE("SimpleLabel functionality", "[SimpleLabel]") {
     SECTION("Constructor sets text correctly") {
@@ -293,7 +296,6 @@ TEST_CASE("ProxyLabel makeTimeout behavior", "[ProxyLabel]") {
         std::cin.rdbuf(input2.rdbuf());
 
         std::string currentLabel = proxyLabel.getText();
-        std::cout << "Current label: " << currentLabel << std::endl;
 
         proxyLabel.makeTimeout();
         REQUIRE(proxyLabel.getText() == currentLabel);
@@ -429,5 +431,281 @@ TEST_CASE("Help text modification", "[HelpText]") {
         label.setHelpText(nullptr);
         REQUIRE_FALSE(label.hasHelpText());
         REQUIRE(label.getHelpText() == "");
+    }
+}
+
+TEST_CASE("LabelFactory functionality", "[LabelFactory]") {
+    SECTION("createSimpleLabel creates proper SimpleLabel") {
+        auto label = LabelFactory::createSimpleLabel("Test Label", "Help text");
+        REQUIRE(label->getText() == "Test Label");
+        REQUIRE(label->hasHelpText());
+        REQUIRE(label->getHelpText() == "Help text");
+    }
+    
+    SECTION("createSimpleLabel with empty help text") {
+        auto label = LabelFactory::createSimpleLabel("Test Label", "");
+        REQUIRE(label->getText() == "Test Label");
+        REQUIRE(label->hasHelpText());
+        REQUIRE(label->getHelpText() == "");
+    }
+    
+    SECTION("createRichLabel creates proper RichLabel") {
+        auto label = LabelFactory::createRichLabel("Rich Label", "blue", "Rich help text");
+        REQUIRE(label->getText() == "Rich Label");
+        REQUIRE(label->getColor() == "blue");
+        REQUIRE(label->hasHelpText());
+        REQUIRE(label->getHelpText() == "Rich help text");
+    }
+    
+    SECTION("createRichLabel with default color and help text") {
+        auto label = LabelFactory::createRichLabel("Rich Label", "", "");
+        REQUIRE(label->getText() == "Rich Label");
+        REQUIRE(label->getColor() == "");
+        REQUIRE(label->hasHelpText());
+        REQUIRE(label->getHelpText() == "");
+    }
+    
+    SECTION("createProxyLabel creates ProxyLabel instance") {
+        auto proxyLabel = LabelFactory::createProxyLabel("Initial Text", "Help text");
+        
+        // Since ProxyLabel constructor doesn't use parameters,
+        // we're just checking that it creates a valid instance
+        REQUIRE(proxyLabel != nullptr);
+        
+        // Test label functionality
+        std::istringstream input("1\nNew Label Text");
+        std::streambuf* oldCin = std::cin.rdbuf(input.rdbuf());
+        
+        // Redirect cout to avoid cluttering test output
+        std::stringstream outputBuffer;
+        std::streambuf* oldCout = std::cout.rdbuf(outputBuffer.rdbuf());
+        
+        // Cast to ProxyLabel to access makeTimeout
+        auto* proxy = dynamic_cast<ProxyLabel*>(proxyLabel.get());
+        REQUIRE(proxy != nullptr);
+        proxy->makeTimeout();
+        
+        // Restore cin and cout
+        std::cin.rdbuf(oldCin);
+        std::cout.rdbuf(oldCout);
+        
+        REQUIRE(proxy->getText() == "New Label Text");
+    }
+    
+    SECTION("Factory creates distinct instances") {
+        auto label1 = LabelFactory::createSimpleLabel("Label 1", "Help 1");
+        auto label2 = LabelFactory::createSimpleLabel("Label 2", "Help 2");
+        
+        REQUIRE(label1->getText() == "Label 1");
+        REQUIRE(label2->getText() == "Label 2");
+        REQUIRE(label1->getHelpText() == "Help 1");
+        REQUIRE(label2->getHelpText() == "Help 2");
+    }
+}
+
+TEST_CASE("TransformationFactory functionality", "[TransformationFactory]") {
+    SECTION("createCapitalize creates proper Capitalize transformation") {
+        auto capitalize = TransformationFactory::createCapitalize();
+        REQUIRE(capitalize->transform("test") == "Test");
+    }
+    
+    SECTION("createLeftTrim creates proper LeftTrim transformation") {
+        auto leftTrim = TransformationFactory::createLeftTrim();
+        REQUIRE(leftTrim->transform("   test") == "test");
+    }
+    
+    SECTION("createRightTrim creates proper RightTrim transformation") {
+        auto rightTrim = TransformationFactory::createRightTrim();
+        REQUIRE(rightTrim->transform("test   ") == "test");
+    }
+    
+    SECTION("createCensor creates proper Censor transformation") {
+        auto censor = TransformationFactory::createCensor("badword");
+        REQUIRE(censor->transform("This contains badword here") == "This contains ******* here");
+    }
+    
+    SECTION("createDecorate creates proper Decorate transformation") {
+        auto decorate = TransformationFactory::createDecorate();
+        REQUIRE(decorate->transform("test") == "-={ test }=-");
+    }
+    
+    SECTION("createNormalizeSpace creates proper NormalizeSpace transformation") {
+        auto normalize = TransformationFactory::createNormalizeSpace();
+        REQUIRE(normalize->transform("test   test") == "test test");
+    }
+    
+    SECTION("createReplace creates proper Replace transformation") {
+        auto replace = TransformationFactory::createReplace("old", "new");
+        REQUIRE(replace->transform("Replace old with new") == "Replace new with new");
+    }
+    
+    SECTION("createComposite creates proper CompositeTransformation") {
+        auto composite = TransformationFactory::createComposite("Capitalize LeftTrim");
+        REQUIRE(composite->transform("  test") == "Test");
+    }
+    
+    SECTION("createComposite with complex transformations") {
+        auto composite = TransformationFactory::createComposite("Capitalize Decorate Replace(test,example)");
+        REQUIRE(composite->transform("this is a test string") == "-={ This is a example string }=-");
+    }
+}
+
+TEST_CASE("DecoratorFactory functionality", "[DecoratorFactory]") {
+    SECTION("createTextTransformationDecorator applies transformation") {
+        auto baseLabel = std::make_shared<SimpleLabel>("test");
+        auto capitalize = TransformationFactory::createCapitalize();
+        
+        auto decorated = DecoratorFactory::createTextTransformationDecorator(baseLabel, capitalize);
+        REQUIRE(decorated->getText() == "Test");
+    }
+    
+    SECTION("createRandomTransformationDecorator applies one transformation randomly") {
+        auto baseLabel = std::make_shared<SimpleLabel>("   test   ");
+        
+        std::vector<std::shared_ptr<TextTransformation>> transformations = {
+            TransformationFactory::createCapitalize(),
+            TransformationFactory::createLeftTrim(),
+            TransformationFactory::createRightTrim()
+        };
+        
+        auto decorated = DecoratorFactory::createRandomTransformationDecorator(baseLabel, transformations);
+        std::string result = decorated->getText();
+        std::cout << '|' << result << '|' << std::endl;
+
+        std::vector<std::string> answers = {"test   ", "   test", "   Test   "};
+        bool right = std::any_of(answers.begin(), answers.end(), [&result](const std::string& answer) {
+            return result == answer;
+        });
+        
+        REQUIRE(right == true);
+    }
+    
+    SECTION("createCyclingTransformationsDecorator cycles through transformations") {
+        auto baseLabel = std::make_shared<SimpleLabel>("  test  ");
+        
+        std::vector<std::shared_ptr<TextTransformation>> transformations = {
+            TransformationFactory::createCapitalize(),
+            TransformationFactory::createLeftTrim(),
+            TransformationFactory::createRightTrim()
+        };
+        
+        auto decorated = DecoratorFactory::createCyclingTransformationsDecorator(baseLabel, transformations);
+        
+        REQUIRE(decorated->getText() == "  Test  "); // First transformation: Capitalize
+        REQUIRE(decorated->getText() == "Test  ");   // Second transformation: LeftTrim
+        REQUIRE(decorated->getText() == "Test");     // Third transformation: RightTrim
+        REQUIRE(decorated->getText() == "Test");     // Back to first: Capitalize (already capitalized)
+    }
+    
+    SECTION("applyMultipleDecorators with text transformations") {
+        auto baseLabel = std::make_shared<SimpleLabel>("  test  ");
+        
+        std::vector<std::string> decoratorTypes = {
+            "textTransformation",
+            "textTransformation",
+            "textTransformation"
+        };
+        
+        std::vector<std::shared_ptr<TextTransformation>> transformations = {
+            TransformationFactory::createLeftTrim(),
+            TransformationFactory::createRightTrim(),
+            TransformationFactory::createCapitalize()
+        };
+        
+        auto decorated = DecoratorFactory::applyMultipleDecorators(baseLabel, decoratorTypes, transformations);
+        REQUIRE(decorated->getText() == "Test");
+    }
+    
+    SECTION("applyMultipleDecorators with mixed decorators") {
+        auto baseLabel = std::make_shared<SimpleLabel>("test");
+        
+        std::vector<std::string> decoratorTypes = {
+            "textTransformation",
+            "random"
+        };
+        
+        std::vector<std::shared_ptr<TextTransformation>> transformations = {
+            TransformationFactory::createDecorate(),
+            TransformationFactory::createCapitalize(),
+            TransformationFactory::createLeftTrim(),
+            TransformationFactory::createRightTrim()
+        };
+        
+        auto decorated = DecoratorFactory::applyMultipleDecorators(baseLabel, decoratorTypes, transformations);
+        std::string result = decorated->getText();
+        
+        // First the text is decorated, then one random transformation is applied
+        bool validResult = (
+            result == "-={ test }=-" ||         // No change from random (unlikely)
+            result == "-={ Test }=-" ||         // Capitalize
+            result == "-={ test }=-" ||         // LeftTrim (no effect)
+            result == "-={ test }=-"            // RightTrim (no effect)
+        );
+        REQUIRE(validResult);
+    }
+    
+    SECTION("applyMultipleDecorators with cycling decorator") {
+        auto baseLabel = std::make_shared<SimpleLabel>("  test  ");
+        
+        std::vector<std::string> decoratorTypes = {
+            "cycling"
+        };
+        
+        std::vector<std::shared_ptr<TextTransformation>> transformations = {
+            TransformationFactory::createCapitalize(),
+            TransformationFactory::createLeftTrim(),
+            TransformationFactory::createRightTrim()
+        };
+        
+        auto decorated = DecoratorFactory::applyMultipleDecorators(baseLabel, decoratorTypes, transformations);
+        
+        REQUIRE(decorated->getText() == "  Test  "); // First transformation: Capitalize
+        REQUIRE(decorated->getText() == "Test  ");   // Second transformation: LeftTrim
+        REQUIRE(decorated->getText() == "Test");     // Third transformation: RightTrim
+    }
+    
+    SECTION("applyMultipleDecorators with invalid decorator type") {
+        auto baseLabel = std::make_shared<SimpleLabel>("test");
+        
+        std::vector<std::string> decoratorTypes = {
+            "invalid",
+            "textTransformation"
+        };
+        
+        std::vector<std::shared_ptr<TextTransformation>> transformations = {
+            TransformationFactory::createCapitalize()
+        };
+        
+        auto decorated = DecoratorFactory::applyMultipleDecorators(baseLabel, decoratorTypes, transformations);
+        
+        // The invalid decorator type should be skipped, but the valid one should still be applied
+        REQUIRE(decorated->getText() == "Test");
+    }
+    
+    SECTION("applyMultipleDecorators with empty transformations") {
+        auto baseLabel = std::make_shared<SimpleLabel>("test");
+        
+        std::vector<std::string> decoratorTypes = {
+            "textTransformation",
+            "random",
+            "cycling"
+        };
+        
+        std::vector<std::shared_ptr<TextTransformation>> transformations = {};
+        
+        auto decorated = DecoratorFactory::applyMultipleDecorators(baseLabel, decoratorTypes, transformations);
+        
+        // No transformations should be applied since the vector is empty
+        REQUIRE(decorated->getText() == "test");
+    }
+    
+    SECTION("createTextTransformationDecorator preserves help text") {
+        auto baseLabel = std::make_shared<SimpleLabel>("test", "Help info");
+        auto capitalize = TransformationFactory::createCapitalize();
+        
+        auto decorated = DecoratorFactory::createTextTransformationDecorator(baseLabel, capitalize);
+        REQUIRE(decorated->getText() == "Test");
+        REQUIRE(baseLabel->hasHelpText());
+        REQUIRE(baseLabel->getHelpText() == "Help info");
     }
 }
